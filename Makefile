@@ -6,7 +6,7 @@ TEST_FILE=test.out
 REPORT_FILE_PATH=reports/go/
 REPORT_FILE=results.xml
 BUILD_FILE_PATH=bin/
-BUILD_FILE=stack_code_cov
+BUILD_FILE=go-postgresql-restapi-sample
 TESTS_PATH=.tests/
 
 .PHONY: default run test report clean build
@@ -17,7 +17,7 @@ clean:
 	rm -rf $(TESTS_PATH) $(BUILD_FILE_PATH)
 
 run:
-	go run main.go
+	go run -tags=jsoniter main.go
 
 test: clean
 	mkdir -p $(TESTS_PATH)$(COVER_PROFILE_PATH)
@@ -28,4 +28,4 @@ report: test
 	go-junit-report --set-exit-code < $(TESTS_PATH)$(TEST_FILE_PATH)$(TEST_FILE) > $(TESTS_PATH)$(REPORT_FILE_PATH)$(REPORT_FILE)
 
 build: clean
-	go build -race -ldflags "-extldflags '-static'" -o $(BUILD_FILE_PATH)$(BUILD_FILE)
+	go build -race -ldflags "-extldflags '-static'" -tags=jsoniter -o $(BUILD_FILE_PATH)$(BUILD_FILE)
