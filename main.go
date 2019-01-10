@@ -1,15 +1,18 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"log"
+
+	"github.com/purini-to/go-postgresql-restapi-sample/server"
 )
 
 func main() {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // listen and serve on 0.0.0.0:8080
+	app, cl, err := server.InitializeApp()
+	if err != nil {
+		log.Fatal("Initialize failed: %v", err)
+	}
+	if runErr := app.Run(); runErr != nil {
+		log.Fatal("Application run failed: %v", runErr)
+		cl()
+	}
 }
