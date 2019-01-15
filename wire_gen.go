@@ -6,13 +6,27 @@
 package main
 
 import (
+	"github.com/purini-to/go-postgresql-restapi-sample/app"
+	"github.com/purini-to/go-postgresql-restapi-sample/controller/api"
+	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
+	"github.com/purini-to/go-postgresql-restapi-sample/middleware"
+	"github.com/purini-to/go-postgresql-restapi-sample/router"
 	"github.com/purini-to/go-postgresql-restapi-sample/server"
 )
 
 // Injectors from wire.go:
 
-func InitializeApp() (*server.App, func(), error) {
-	app := server.ProvideApp()
-	return app, func() {
+func InitializeApp() (*app.App, func(), error) {
+	engine := server.ProvideEngine()
+	zapLogger, err := logger.ProvideLogger()
+	if err != nil {
+		return nil, nil, err
+	}
+	cors := middleware.ProvideCors(zapLogger)
+	ping := api.ProvidePing(zapLogger)
+	routerRouter := router.ProvideRouter(cors, ping)
+	serverServer := server.ProvideServer(engine, routerRouter)
+	appApp := app.ProvideApp(serverServer)
+	return appApp, func() {
 	}, nil
 }
