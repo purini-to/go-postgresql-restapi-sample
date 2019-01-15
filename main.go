@@ -9,8 +9,8 @@ func main() {
 	if err != nil {
 		log.Fatal("Initialize failed: %v", err)
 	}
-	if runErr := app.Run(); runErr != nil {
-		log.Fatal("Application run failed: %v", runErr)
+	if runErr := app.Start(); runErr != nil {
+		log.Fatal("Application start failed: %v", runErr)
 		cl()
 	}
 }

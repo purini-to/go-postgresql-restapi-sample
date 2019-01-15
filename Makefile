@@ -17,7 +17,7 @@ clean:
 	rm -rf $(TESTS_PATH) $(BUILD_FILE_PATH)
 
 run:
-	go run -tags=jsoniter main.go
+	go run -tags=jsoniter main.go wire_gen.go
 
 test: clean
 	mkdir -p $(TESTS_PATH)$(COVER_PROFILE_PATH)
