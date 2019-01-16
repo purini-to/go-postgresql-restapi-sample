@@ -7,4 +7,5 @@ import (
 // MiddleSet is middleware initialize group sets.
 var MiddleSet = wire.NewSet(
 	ProvideCors,
+	ProvideLog,
 )

@@ -23,8 +23,9 @@ func InitializeApp() (*app.App, func(), error) {
 		return nil, nil, err
 	}
 	cors := middleware.ProvideCors(zapLogger)
+	log := middleware.ProvideLog(zapLogger)
 	ping := api.ProvidePing(zapLogger)
-	routerRouter := router.ProvideRouter(cors, ping)
+	routerRouter := router.ProvideRouter(cors, log, ping)
 	serverServer := server.ProvideServer(engine, routerRouter)
 	appApp := app.ProvideApp(serverServer)
 	return appApp, func() {
