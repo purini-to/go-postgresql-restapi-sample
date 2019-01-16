@@ -17,6 +17,7 @@ clean:
 	rm -rf $(TESTS_PATH) $(BUILD_FILE_PATH)
 
 run:
+	wire
 	go run -tags=jsoniter main.go wire_gen.go
 
 test: clean

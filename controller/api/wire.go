@@ -1,3 +1,5 @@
+//+build wireinject
+
 package api
 
 import (
