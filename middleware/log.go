@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,7 @@ type Log struct {
 
 // Handler handle log function.
 func (c *Log) Handler() gin.HandlerFunc {
+	c.logger.Info("initialize log middleware.")
 	if !context.IsProduction() {
 		return gin.Logger()
 	}
@@ -38,14 +40,16 @@ func (c *Log) Handler() gin.HandlerFunc {
 		method := ctx.Request.Method
 		statusCode := ctx.Writer.Status()
 		err := ctx.Errors.ByType(gin.ErrorTypePrivate).String()
+		msg := fmt.Sprintf("%s %s", method, path)
 
-		c.logger.Info(err,
+		c.logger.Info(msg,
 			zap.String("url", path),
 			zap.Time("time", end),
 			zap.Duration("latency", latency),
 			zap.String("method", method),
 			zap.String("clientIP", clientIP),
 			zap.Int("statusCode", statusCode),
+			zap.String("err", err),
 		)
 	}
 }
