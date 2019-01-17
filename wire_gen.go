@@ -8,6 +8,8 @@ package main
 import (
 	"github.com/purini-to/go-postgresql-restapi-sample/app"
 	"github.com/purini-to/go-postgresql-restapi-sample/controller/api"
+	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
+	"github.com/purini-to/go-postgresql-restapi-sample/core/db"
 	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
 	"github.com/purini-to/go-postgresql-restapi-sample/middleware"
 	"github.com/purini-to/go-postgresql-restapi-sample/router"
@@ -24,10 +26,19 @@ func InitializeApp() (*app.App, func(), error) {
 	}
 	cors := middleware.ProvideCors(zapLogger)
 	log := middleware.ProvideLog(zapLogger)
-	ping := api.ProvidePing(zapLogger)
-	routerRouter := router.ProvideRouter(cors, log, ping)
+	viper, err := config.ProvideConfig(zapLogger)
+	if err != nil {
+		return nil, nil, err
+	}
+	gormDB, cleanup, err := db.ProvideDB(viper, zapLogger)
+	if err != nil {
+		return nil, nil, err
+	}
+	consumerAPI := api.ProvideConsumerAPI(zapLogger, gormDB)
+	routerRouter := router.ProvideRouter(cors, log, consumerAPI)
 	serverServer := server.ProvideServer(engine, routerRouter)
 	appApp := app.ProvideApp(serverServer)
 	return appApp, func() {
+		cleanup()
 	}, nil
 }

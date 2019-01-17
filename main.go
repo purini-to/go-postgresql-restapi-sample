@@ -13,4 +13,5 @@ func main() {
 		log.Fatal("Application start failed: %v", runErr)
 		cl()
 	}
+	cl()
 }
