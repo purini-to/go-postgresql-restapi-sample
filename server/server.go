@@ -1,26 +1,32 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
+	"net/http"
+
+	"github.com/spf13/viper"
+
+	"github.com/go-chi/chi"
 	"github.com/purini-to/go-postgresql-restapi-sample/router"
 )
 
 // Server is application context
 type Server struct {
 	router *router.Router
-	engine *gin.Engine
+	engine *chi.Mux
+	config *viper.Viper
 }
 
 // Start start application
 func (a *Server) Start() error {
 	a.router.Mapping(a.engine)
-	return a.engine.Run()
+	return http.ListenAndServe(":"+a.config.GetString("PORT"), a.engine)
 }
 
 // ProvideServer provide Server instance
-func ProvideServer(en *gin.Engine, r *router.Router) *Server {
+func ProvideServer(en *chi.Mux, r *router.Router, c *viper.Viper) *Server {
 	return &Server{
 		router: r,
 		engine: en,
+		config: c,
 	}
 }

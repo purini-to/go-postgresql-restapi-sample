@@ -1,8 +1,10 @@
 package server
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/go-chi/chi"
+)
 
 // ProvideEngine provide web framework engine.
-func ProvideEngine() *gin.Engine {
-	return gin.New()
+func ProvideEngine() *chi.Mux {
+	return chi.NewRouter()
 }

@@ -17,6 +17,8 @@ func ProvideConfig(lg *zap.Logger) (*viper.Viper, error) {
 		file = "config/application.yaml"
 	}
 
+	v.SetDefault("PORT", "8080")
+
 	v.SetConfigFile(file)
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()

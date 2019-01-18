@@ -3,10 +3,6 @@ package db
 import (
 	"fmt"
 
-	"github.com/purini-to/go-postgresql-restapi-sample/controller/api"
-
-	"github.com/purini-to/go-postgresql-restapi-sample/context"
-
 	"go.uber.org/zap"
 
 	"github.com/jinzhu/gorm"
@@ -34,10 +30,7 @@ func ProvideDB(cf *viper.Viper, lg *zap.Logger) (*gorm.DB, func(), error) {
 		return nil, nil, err
 	}
 
-	if !context.IsProduction() {
-		db.LogMode(true)
-	}
-	db.AutoMigrate(&api.Consumer{})
+	db.LogMode(true)
 	return db, func() {
 		db.Close()
 	}, nil
