@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"net/http"
+	"github.com/purini-to/go-postgresql-restapi-sample/errors"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -14,9 +14,8 @@ type NoRoute struct {
 
 // Handler handle not found function.
 func (n *NoRoute) Handler(c *gin.Context) {
-	c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-		"message": "path not found",
-	})
+	res := errors.NotFound()
+	c.AbortWithStatusJSON(res.GetCode(), res.GetBody())
 }
 
 // ProvideNoRoute provide no router filter.

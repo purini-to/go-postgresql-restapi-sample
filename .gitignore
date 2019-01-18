@@ -22,3 +22,6 @@
 # Artifact
 bin
 tmp
+
+# Docker
+data

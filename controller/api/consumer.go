@@ -1,9 +1,9 @@
 package api
 
 import (
-	"net/http"
-
 	"github.com/purini-to/go-postgresql-restapi-sample/controller"
+
+	"github.com/purini-to/go-postgresql-restapi-sample/errors"
 
 	"github.com/jinzhu/gorm"
 
@@ -25,14 +25,17 @@ type Consumer struct {
 }
 
 // Get is get consumer by id.
-func (a *ConsumerAPI) Get(c *gin.Context) {
+func (a *ConsumerAPI) Get(c *gin.Context) (*controller.Response, errors.Error) {
 	id := c.Param("id")
 	var consumer Consumer
-	if err := a.db.First(&consumer, "id = ?", id).Error; err != nil {
-		controller.AbortNotFound(c, "")
-		return
+	err := a.db.First(&consumer, "id = ?", id).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return nil, errors.NotFound()
+	} else if err != nil {
+		a.logger.Error(err.Error(), zap.String("id", id))
+		return nil, errors.InternalServerError()
 	}
-	c.JSON(http.StatusOK, &consumer)
+	return controller.OK(&consumer), nil
 }
 
 // ProvideConsumerAPI provide consumer api.

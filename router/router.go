@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/purini-to/go-postgresql-restapi-sample/controller"
 	"github.com/purini-to/go-postgresql-restapi-sample/controller/api"
 	"github.com/purini-to/go-postgresql-restapi-sample/middleware"
 )
@@ -22,7 +23,7 @@ func (r *Router) Mapping(engine *gin.Engine) {
 
 	engine.NoRoute(r.nrMid.Handler)
 
-	engine.GET("consumers/:id", r.consumerAPI.Get)
+	engine.GET("consumers/:id", controller.WrapHandle(r.consumerAPI.Get))
 }
 
 // ProvideRouter provide application route.
