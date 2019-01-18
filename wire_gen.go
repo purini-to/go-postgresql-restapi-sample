@@ -26,6 +26,7 @@ func InitializeApp() (*app.App, func(), error) {
 	}
 	cors := middleware.ProvideCors(zapLogger)
 	log := middleware.ProvideLog(zapLogger)
+	noRoute := middleware.ProvideNoRoute(zapLogger)
 	viper, err := config.ProvideConfig(zapLogger)
 	if err != nil {
 		return nil, nil, err
@@ -35,7 +36,7 @@ func InitializeApp() (*app.App, func(), error) {
 		return nil, nil, err
 	}
 	consumerAPI := api.ProvideConsumerAPI(zapLogger, gormDB)
-	routerRouter := router.ProvideRouter(cors, log, consumerAPI)
+	routerRouter := router.ProvideRouter(cors, log, noRoute, consumerAPI)
 	serverServer := server.ProvideServer(engine, routerRouter)
 	appApp := app.ProvideApp(serverServer)
 	return appApp, func() {

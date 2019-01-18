@@ -10,6 +10,7 @@ import (
 type Router struct {
 	corsMid     *middleware.Cors
 	logMid      *middleware.Log
+	nrMid       *middleware.NoRoute
 	consumerAPI *api.ConsumerAPI
 }
 
@@ -19,14 +20,22 @@ func (r *Router) Mapping(engine *gin.Engine) {
 	engine.Use(gin.Recovery())
 	engine.Use(r.corsMid.Handler())
 
+	engine.NoRoute(r.nrMid.Handler)
+
 	engine.GET("consumers/:id", r.consumerAPI.Get)
 }
 
 // ProvideRouter provide application route.
-func ProvideRouter(cm *middleware.Cors, lg *middleware.Log, conAPI *api.ConsumerAPI) *Router {
+func ProvideRouter(
+	cm *middleware.Cors,
+	lg *middleware.Log,
+	nr *middleware.NoRoute,
+	conAPI *api.ConsumerAPI,
+) *Router {
 	return &Router{
 		corsMid:     cm,
 		logMid:      lg,
+		nrMid:       nr,
 		consumerAPI: conAPI,
 	}
 }

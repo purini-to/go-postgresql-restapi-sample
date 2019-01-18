@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/purini-to/go-postgresql-restapi-sample/controller"
+
 	"github.com/jinzhu/gorm"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +29,7 @@ func (a *ConsumerAPI) Get(c *gin.Context) {
 	id := c.Param("id")
 	var consumer Consumer
 	if err := a.db.First(&consumer, "id = ?", id).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, err)
+		controller.AbortNotFound(c, "")
 		return
 	}
 	c.JSON(http.StatusOK, &consumer)
