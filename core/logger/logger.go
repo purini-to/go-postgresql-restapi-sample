@@ -11,8 +11,8 @@ type Logger struct {
 	*zap.Logger
 }
 
-// ProvideLogger provide logger adapter.
-func ProvideLogger(cf *config.Config) (*Logger, error) {
+// NewLogger create logger adapter.
+func NewLogger(cf *config.Config) (*Logger, error) {
 	var (
 		l   *zap.Logger
 		err error

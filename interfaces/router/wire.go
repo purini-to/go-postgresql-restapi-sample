@@ -8,5 +8,5 @@ import (
 
 // RouterSet is routeing initialize group sets.
 var RouterSet = wire.NewSet(
-	ProvideRouter,
+	NewRouter,
 )

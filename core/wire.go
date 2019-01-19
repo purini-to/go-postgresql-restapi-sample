@@ -11,7 +11,7 @@ import (
 
 // CoreSet is core initialize group sets.
 var CoreSet = wire.NewSet(
-	logger.ProvideLogger,
-	db.ProvideDB,
-	config.ProvideConfig,
+	logger.NewLogger,
+	db.NewDB,
+	config.NewConfig,
 )

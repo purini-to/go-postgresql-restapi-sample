@@ -6,31 +6,29 @@
 package main
 
 import (
-	"github.com/purini-to/go-postgresql-restapi-sample/app"
 	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
 	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
-	"github.com/purini-to/go-postgresql-restapi-sample/middleware"
-	"github.com/purini-to/go-postgresql-restapi-sample/router"
-	"github.com/purini-to/go-postgresql-restapi-sample/server"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/middleware"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/router"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/server"
 )
 
 // Injectors from wire.go:
 
-func InitializeApp() (*app.App, func(), error) {
-	mux := server.ProvideEngine()
-	configConfig, err := config.ProvideConfig()
+func InitializeServer() (*server.Server, func(), error) {
+	mux := server.NewEngine()
+	configConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, nil, err
 	}
-	loggerLogger, err := logger.ProvideLogger(configConfig)
+	loggerLogger, err := logger.NewLogger(configConfig)
 	if err != nil {
 		return nil, nil, err
 	}
-	middlewareLogger := middleware.ProvideLogger(loggerLogger)
-	recoverer := middleware.ProvideRecoverer(loggerLogger)
-	routerRouter := router.ProvideRouter(loggerLogger, middlewareLogger, recoverer)
-	serverServer := server.ProvideServer(mux, routerRouter, configConfig)
-	appApp := app.ProvideApp(serverServer)
-	return appApp, func() {
+	middlewareLogger := middleware.NewLogger(loggerLogger)
+	recoverer := middleware.NewRecoverer(loggerLogger)
+	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer)
+	serverServer := server.NewServer(mux, routerRouter, configConfig)
+	return serverServer, func() {
 	}, nil
 }

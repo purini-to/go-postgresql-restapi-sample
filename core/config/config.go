@@ -22,8 +22,8 @@ func (c *Config) IsProduction() bool {
 	return c.GetString(modeKey) == "production"
 }
 
-// ProvideConfig provide config.
-func ProvideConfig() (*Config, error) {
+// NewConfig create config.
+func NewConfig() (*Config, error) {
 	v := viper.New()
 	file := os.Getenv("CONFIG_FILE")
 	if file == "" {

@@ -8,6 +8,6 @@ import (
 
 // ServerSet is server initialize group sets.
 var ServerSet = wire.NewSet(
-	ProvideServer,
-	ProvideEngine,
+	NewServer,
+	NewEngine,
 )

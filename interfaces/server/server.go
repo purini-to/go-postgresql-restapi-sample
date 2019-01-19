@@ -6,7 +6,7 @@ import (
 	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
 
 	"github.com/go-chi/chi"
-	"github.com/purini-to/go-postgresql-restapi-sample/router"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/router"
 )
 
 // Server is application context
@@ -22,8 +22,8 @@ func (a *Server) Start() error {
 	return http.ListenAndServe(":"+a.config.GetString("PORT"), a.engine)
 }
 
-// ProvideServer provide Server instance
-func ProvideServer(en *chi.Mux, r *router.Router, c *config.Config) *Server {
+// NewServer create Server instance
+func NewServer(en *chi.Mux, r *router.Router, c *config.Config) *Server {
 	return &Server{
 		router: r,
 		engine: en,

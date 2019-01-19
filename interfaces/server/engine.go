@@ -4,7 +4,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// ProvideEngine provide web framework engine.
-func ProvideEngine() *chi.Mux {
+// NewEngine create web framework engine.
+func NewEngine() *chi.Mux {
 	return chi.NewRouter()
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
 
-	"github.com/purini-to/go-postgresql-restapi-sample/middleware"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/middleware"
 
 	"github.com/go-chi/chi"
 	cw "github.com/go-chi/chi/middleware"
@@ -35,8 +35,8 @@ func (r *Router) Mapping(engine *chi.Mux) {
 	})
 }
 
-// ProvideRouter provide application route.
-func ProvideRouter(
+// NewRouter create application route.
+func NewRouter(
 	lg *logger.Logger,
 	lm middleware.Logger,
 	rm middleware.Recoverer,

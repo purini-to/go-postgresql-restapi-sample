@@ -18,8 +18,8 @@ type DB struct {
 	*gorm.DB
 }
 
-// ProvideDB provide db connection.
-func ProvideDB(cf *config.Config) (*DB, func(), error) {
+// NewDB create db connection.
+func NewDB(cf *config.Config) (*DB, func(), error) {
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 		viper.GetString(`db.user`),
 		viper.GetString(`db.pass`),

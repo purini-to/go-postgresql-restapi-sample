@@ -5,13 +5,13 @@ import (
 )
 
 func main() {
-	app, cl, err := InitializeApp()
+	server, cl, err := InitializeServer()
 	if err != nil {
-		log.Fatal("Initialize failed: %v", err)
+		log.Fatal("Initialize failed", err)
 	}
-	if runErr := app.Start(); runErr != nil {
-		log.Fatal("Application start failed: %v", runErr)
+	if runErr := server.Start(); runErr != nil {
 		cl()
+		log.Fatal("Server start failed", runErr)
 	}
 	cl()
 }
