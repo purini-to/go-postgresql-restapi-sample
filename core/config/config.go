@@ -4,26 +4,42 @@ import (
 	"os"
 	"strings"
 
-	"go.uber.org/zap"
-
 	"github.com/spf13/viper"
 )
 
+var (
+	defaultConfFile = "config/app.yaml"
+	modeKey         = "MODE"
+)
+
+// Config is application of configuration.
+type Config struct {
+	*viper.Viper
+}
+
+// IsProduction return true if application is production.
+func (c *Config) IsProduction() bool {
+	return c.GetString(modeKey) == "production"
+}
+
 // ProvideConfig provide config.
-func ProvideConfig(lg *zap.Logger) (*viper.Viper, error) {
+func ProvideConfig() (*Config, error) {
 	v := viper.New()
 	file := os.Getenv("CONFIG_FILE")
 	if file == "" {
-		file = "config/application.yaml"
+		file = defaultConfFile
 	}
 
 	v.SetDefault("PORT", "8080")
+	v.SetDefault(modeKey, "development")
 
 	v.SetConfigFile(file)
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 	if err := v.ReadInConfig(); err != nil {
-		lg.Warn(err.Error(), zap.String("file", file))
+		return nil, err
 	}
-	return v, nil
+	return &Config{
+		v,
+	}, nil
 }

@@ -2,8 +2,10 @@ package db
 
 import (
 	"fmt"
+	"net/url"
+	"strconv"
 
-	"go.uber.org/zap"
+	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
 
 	"github.com/jinzhu/gorm"
 	// PostgreSQL driver
@@ -11,27 +13,37 @@ import (
 	"github.com/spf13/viper"
 )
 
-type logger struct {
-	lg *zap.Logger
+// DB is database client.
+type DB struct {
+	*gorm.DB
 }
 
 // ProvideDB provide db connection.
-func ProvideDB(cf *viper.Viper, lg *zap.Logger) (*gorm.DB, func(), error) {
-	args := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s %s",
-		cf.GetString("db.host"),
-		cf.GetString("db.user"),
-		cf.GetString("db.password"),
-		cf.GetString("db.dbname"),
-		cf.GetString("db.extension"),
+func ProvideDB(cf *config.Config) (*DB, func(), error) {
+	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+		viper.GetString(`db.user`),
+		viper.GetString(`db.pass`),
+		viper.GetString(`db.host`),
+		viper.GetString(`db.port`),
+		viper.GetString(`db.name`),
 	)
-	db, err := gorm.Open("postgres", args)
+	val := url.Values{}
+	val.Add("parseTime", strconv.Itoa(viper.GetInt(`db.parseTime`)))
+	val.Add("loc", viper.GetString(`db.loc`))
+	dsn := fmt.Sprintf("%s?%s", connection, val.Encode())
+
+	db, err := gorm.Open("postgres", dsn)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	db.LogMode(true)
-	return db, func() {
-		db.Close()
-	}, nil
+	if !cf.IsProduction() {
+		db.LogMode(true)
+	}
+
+	return &DB{
+			db,
+		}, func() {
+			db.Close()
+		}, nil
 }

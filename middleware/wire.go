@@ -6,7 +6,8 @@ import (
 	"github.com/google/wire"
 )
 
-// CoreSet is core initialize group sets.
+// ProvideLogger is middleware initialize group sets.
 var MiddleSet = wire.NewSet(
 	ProvideLogger,
+	ProvideRecoverer,
 )

@@ -9,6 +9,7 @@ import (
 	"github.com/purini-to/go-postgresql-restapi-sample/app"
 	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
 	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
+	"github.com/purini-to/go-postgresql-restapi-sample/middleware"
 	"github.com/purini-to/go-postgresql-restapi-sample/router"
 	"github.com/purini-to/go-postgresql-restapi-sample/server"
 )
@@ -17,16 +18,18 @@ import (
 
 func InitializeApp() (*app.App, func(), error) {
 	mux := server.ProvideEngine()
-	zapLogger, err := logger.ProvideLogger()
+	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, nil, err
 	}
-	routerRouter := router.ProvideRouter(zapLogger)
-	viper, err := config.ProvideConfig(zapLogger)
+	loggerLogger, err := logger.ProvideLogger(configConfig)
 	if err != nil {
 		return nil, nil, err
 	}
-	serverServer := server.ProvideServer(mux, routerRouter, viper)
+	middlewareLogger := middleware.ProvideLogger(loggerLogger)
+	recoverer := middleware.ProvideRecoverer(loggerLogger)
+	routerRouter := router.ProvideRouter(loggerLogger, middlewareLogger, recoverer)
+	serverServer := server.ProvideServer(mux, routerRouter, configConfig)
 	appApp := app.ProvideApp(serverServer)
 	return appApp, func() {
 	}, nil
