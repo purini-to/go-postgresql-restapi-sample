@@ -4,17 +4,21 @@ package main
 
 import (
 	"github.com/google/wire"
-	"github.com/purini-to/go-postgresql-restapi-sample/core"
-	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/middleware"
-	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/router"
-	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/server"
+	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
+	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/handler"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/middleware"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/router"
 )
 
-func InitializeServer() (*server.Server, func(), error) {
+func InitializeServer() (*http.Server, func(), error) {
 	panic(wire.Build(
-		server.ServerSet,
-		core.CoreSet,
-		router.RouterSet,
+		http.HttpSet,
+		config.ConfigSet,
+		logger.LoggerSet,
+		handler.HandlerSet,
 		middleware.MiddleSet,
+		router.RouterSet,
 	))
 }

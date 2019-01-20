@@ -6,7 +6,7 @@ import (
 	"github.com/google/wire"
 )
 
-// NewLogger is middleware initialize group sets.
+// MiddleSet is middleware initialize group sets.
 var MiddleSet = wire.NewSet(
 	NewLogger,
 	NewRecoverer,

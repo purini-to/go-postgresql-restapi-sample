@@ -1,12 +1,13 @@
 package router
 
 import (
-	"net/http"
 	"time"
+
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/handler"
 
 	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
 
-	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/middleware"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/middleware"
 
 	"github.com/go-chi/chi"
 	cw "github.com/go-chi/chi/middleware"
@@ -17,6 +18,7 @@ type Router struct {
 	logger *logger.Logger
 	logMid middleware.Logger
 	recMid middleware.Recoverer
+	pingH  *handler.Ping
 }
 
 // Mapping handle for url and method.
@@ -30,9 +32,7 @@ func (r *Router) Mapping(engine *chi.Mux) {
 	// processing should be stopped.
 	engine.Use(cw.Timeout(60 * time.Second))
 
-	engine.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hi"))
-	})
+	engine.Get("/ping", r.pingH.Ping)
 }
 
 // NewRouter create application route.
@@ -40,10 +40,12 @@ func NewRouter(
 	lg *logger.Logger,
 	lm middleware.Logger,
 	rm middleware.Recoverer,
+	ph *handler.Ping,
 ) *Router {
 	return &Router{
 		logger: lg,
 		logMid: lm,
 		recMid: rm,
+		pingH:  ph,
 	}
 }

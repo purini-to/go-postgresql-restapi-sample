@@ -1,12 +1,13 @@
-package server
+package http
 
 import (
-	"net/http"
+	hp "net/http"
+
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/router"
 
 	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
 
 	"github.com/go-chi/chi"
-	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/router"
 )
 
 // Server is application context
@@ -19,7 +20,7 @@ type Server struct {
 // Start start application
 func (a *Server) Start() error {
 	a.router.Mapping(a.engine)
-	return http.ListenAndServe(":"+a.config.GetString("PORT"), a.engine)
+	return hp.ListenAndServe(":"+a.config.GetString("PORT"), a.engine)
 }
 
 // NewServer create Server instance

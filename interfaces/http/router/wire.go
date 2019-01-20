@@ -6,7 +6,7 @@ import (
 	"github.com/google/wire"
 )
 
-// RouterSet is routeing initialize group sets.
+// RouterSet is router initialize group sets.
 var RouterSet = wire.NewSet(
 	NewRouter,
 )

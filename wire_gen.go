@@ -8,15 +8,16 @@ package main
 import (
 	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
 	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
-	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/middleware"
-	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/router"
-	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/server"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/handler"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/middleware"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/router"
 )
 
 // Injectors from wire.go:
 
-func InitializeServer() (*server.Server, func(), error) {
-	mux := server.NewEngine()
+func InitializeServer() (*http.Server, func(), error) {
+	mux := http.NewEngine()
 	configConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, nil, err
@@ -27,8 +28,9 @@ func InitializeServer() (*server.Server, func(), error) {
 	}
 	middlewareLogger := middleware.NewLogger(loggerLogger)
 	recoverer := middleware.NewRecoverer(loggerLogger)
-	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer)
-	serverServer := server.NewServer(mux, routerRouter, configConfig)
-	return serverServer, func() {
+	ping := handler.NewPing(loggerLogger)
+	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer, ping)
+	server := http.NewServer(mux, routerRouter, configConfig)
+	return server, func() {
 	}, nil
 }
