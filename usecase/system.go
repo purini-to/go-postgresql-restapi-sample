@@ -17,9 +17,23 @@ type System struct {
 	sr repository.System
 }
 
+func (s *System) Find(ctx context.Context) (*[]model.System, error) {
+	var m []model.System
+	if err := s.sr.Find(ctx, s.db, &m); err != nil {
+		return nil, err
+	}
+
+	return &m, nil
+}
+
 // FindID find system by id.
 func (s *System) FindID(ctx context.Context, id string) (*model.System, error) {
-	return s.sr.FindID(ctx, s.db, id)
+	var m model.System
+	if err := s.sr.FindID(ctx, s.db, id, &m); err != nil {
+		return nil, err
+	}
+
+	return &m, nil
 }
 
 // Create create system.

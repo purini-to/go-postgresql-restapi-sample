@@ -43,6 +43,7 @@ func (r *Router) Mapping(engine *chi.Mux) {
 	engine.Get("/ping", r.pingH.Ping)
 
 	engine.Route("/systems", func(rt chi.Router) {
+		rt.Get("/", r.systemH.List)
 		rt.Post("/", r.systemH.Create)
 
 		rt.Route("/{id}", func(rt chi.Router) {

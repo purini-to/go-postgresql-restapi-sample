@@ -52,6 +52,17 @@ func (s *System) Ctx(next http.Handler) http.Handler {
 	})
 }
 
+func (s *System) List(w http.ResponseWriter, r *http.Request) {
+	systems, err := s.su.Find(r.Context())
+	if err != nil {
+		api.InternalServerError(w)
+		s.l.Error(err.Error())
+		return
+	}
+
+	api.JSON(w, systems, http.StatusOK)
+}
+
 // Get get system by id.
 func (s *System) Get(w http.ResponseWriter, r *http.Request) {
 	api.JSON(w, r.Context().Value(systemKey), http.StatusOK)
