@@ -4,5 +4,4 @@ db:
   user: test
   pass: test
   name: test
-  parseTime: true
-  loc: "Asia/Tokyo"
+  extension: "sslmode=disable"

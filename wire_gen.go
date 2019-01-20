@@ -8,10 +8,13 @@ package main
 import (
 	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
 	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
+	"github.com/purini-to/go-postgresql-restapi-sample/infrastructure/persistence/datastore"
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/db"
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http"
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/handler"
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/middleware"
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/router"
+	"github.com/purini-to/go-postgresql-restapi-sample/usecase"
 )
 
 // Injectors from wire.go:
@@ -29,9 +32,16 @@ func InitializeServer() (*http.Server, func(), error) {
 	middlewareLogger := middleware.NewLogger(loggerLogger)
 	recoverer := middleware.NewRecoverer(loggerLogger)
 	ping := handler.NewPing(loggerLogger)
-	notfound := handler.NewNotfound()
-	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer, ping, notfound)
+	dbDB, cleanup, err := db.NewDB(configConfig)
+	if err != nil {
+		return nil, nil, err
+	}
+	system := datastore.NewSystem()
+	usecaseSystem := usecase.NewSystem(loggerLogger, dbDB, system)
+	handlerSystem := handler.NewSystem(loggerLogger, usecaseSystem)
+	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer, ping, handlerSystem)
 	server := http.NewServer(mux, routerRouter, configConfig)
 	return server, func() {
+		cleanup()
 	}, nil
 }

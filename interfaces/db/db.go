@@ -2,15 +2,14 @@ package db
 
 import (
 	"fmt"
-	"net/url"
-	"strconv"
+
+	"github.com/purini-to/go-postgresql-restapi-sample/domain/model"
 
 	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
 
 	"github.com/jinzhu/gorm"
 	// PostgreSQL driver
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/spf13/viper"
 )
 
 // DB is database client.
@@ -20,19 +19,15 @@ type DB struct {
 
 // NewDB create db connection.
 func NewDB(cf *config.Config) (*DB, func(), error) {
-	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
-		viper.GetString(`db.user`),
-		viper.GetString(`db.pass`),
-		viper.GetString(`db.host`),
-		viper.GetString(`db.port`),
-		viper.GetString(`db.name`),
+	connection := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s %s",
+		cf.GetString(`db.host`),
+		cf.GetString(`db.port`),
+		cf.GetString(`db.user`),
+		cf.GetString(`db.name`),
+		cf.GetString(`db.pass`),
+		cf.GetString(`db.extension`),
 	)
-	val := url.Values{}
-	val.Add("parseTime", strconv.Itoa(viper.GetInt(`db.parseTime`)))
-	val.Add("loc", viper.GetString(`db.loc`))
-	dsn := fmt.Sprintf("%s?%s", connection, val.Encode())
-
-	db, err := gorm.Open("postgres", dsn)
+	db, err := gorm.Open("postgres", connection)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -40,6 +35,8 @@ func NewDB(cf *config.Config) (*DB, func(), error) {
 	if !cf.IsProduction() {
 		db.LogMode(true)
 	}
+
+	db.AutoMigrate(&model.System{})
 
 	return &DB{
 			db,

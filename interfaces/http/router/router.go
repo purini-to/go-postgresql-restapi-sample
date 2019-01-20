@@ -1,7 +1,10 @@
 package router
 
 import (
+	"net/http"
 	"time"
+
+	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/api"
 
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http/handler"
 
@@ -15,11 +18,11 @@ import (
 
 // Router is routeing application.
 type Router struct {
-	logger    *logger.Logger
-	logMid    middleware.Logger
-	recMid    middleware.Recoverer
-	pingH     *handler.Ping
-	notfoundH *handler.Notfound
+	logger  *logger.Logger
+	logMid  middleware.Logger
+	recMid  middleware.Recoverer
+	pingH   *handler.Ping
+	systemH *handler.System
 }
 
 // Mapping handle for url and method.
@@ -33,9 +36,20 @@ func (r *Router) Mapping(engine *chi.Mux) {
 	// processing should be stopped.
 	engine.Use(cw.Timeout(60 * time.Second))
 
-	engine.NotFound(r.notfoundH.Handler)
+	engine.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		api.Notfound(w)
+	})
 
 	engine.Get("/ping", r.pingH.Ping)
+
+	engine.Route("/systems", func(rt chi.Router) {
+		rt.Post("/", r.systemH.Create)
+
+		rt.Route("/{id}", func(rt chi.Router) {
+			rt.Use(r.systemH.Ctx)
+			rt.Get("/", r.systemH.Get)
+		})
+	})
 }
 
 // NewRouter create application route.
@@ -44,13 +58,13 @@ func NewRouter(
 	lm middleware.Logger,
 	rm middleware.Recoverer,
 	ph *handler.Ping,
-	nh *handler.Notfound,
+	sh *handler.System,
 ) *Router {
 	return &Router{
-		logger:    lg,
-		logMid:    lm,
-		recMid:    rm,
-		pingH:     ph,
-		notfoundH: nh,
+		logger:  lg,
+		logMid:  lm,
+		recMid:  rm,
+		pingH:   ph,
+		systemH: sh,
 	}
 }
