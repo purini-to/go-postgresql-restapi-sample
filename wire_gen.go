@@ -29,7 +29,8 @@ func InitializeServer() (*http.Server, func(), error) {
 	middlewareLogger := middleware.NewLogger(loggerLogger)
 	recoverer := middleware.NewRecoverer(loggerLogger)
 	ping := handler.NewPing(loggerLogger)
-	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer, ping)
+	notfound := handler.NewNotfound()
+	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer, ping, notfound)
 	server := http.NewServer(mux, routerRouter, configConfig)
 	return server, func() {
 	}, nil

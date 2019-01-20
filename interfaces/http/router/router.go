@@ -15,10 +15,11 @@ import (
 
 // Router is routeing application.
 type Router struct {
-	logger *logger.Logger
-	logMid middleware.Logger
-	recMid middleware.Recoverer
-	pingH  *handler.Ping
+	logger    *logger.Logger
+	logMid    middleware.Logger
+	recMid    middleware.Recoverer
+	pingH     *handler.Ping
+	notfoundH *handler.Notfound
 }
 
 // Mapping handle for url and method.
@@ -32,6 +33,8 @@ func (r *Router) Mapping(engine *chi.Mux) {
 	// processing should be stopped.
 	engine.Use(cw.Timeout(60 * time.Second))
 
+	engine.NotFound(r.notfoundH.Handler)
+
 	engine.Get("/ping", r.pingH.Ping)
 }
 
@@ -41,11 +44,13 @@ func NewRouter(
 	lm middleware.Logger,
 	rm middleware.Recoverer,
 	ph *handler.Ping,
+	nh *handler.Notfound,
 ) *Router {
 	return &Router{
-		logger: lg,
-		logMid: lm,
-		recMid: rm,
-		pingH:  ph,
+		logger:    lg,
+		logMid:    lm,
+		recMid:    rm,
+		pingH:     ph,
+		notfoundH: nh,
 	}
 }
