@@ -52,8 +52,12 @@ func (s *System) Ctx(next http.Handler) http.Handler {
 	})
 }
 
+// List get system list
 func (s *System) List(w http.ResponseWriter, r *http.Request) {
-	systems, err := s.su.Find(r.Context())
+	var q model.Query
+	api.BindQuery(r, &q)
+
+	systems, err := s.su.Find(r.Context(), &q)
 	if err != nil {
 		api.InternalServerError(w)
 		s.l.Error(err.Error())

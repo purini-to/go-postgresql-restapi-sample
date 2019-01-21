@@ -17,9 +17,10 @@ type System struct {
 	sr repository.System
 }
 
-func (s *System) Find(ctx context.Context) (*[]model.System, error) {
+// Find find system.
+func (s *System) Find(ctx context.Context, q *model.Query) (*[]model.System, error) {
 	var m []model.System
-	if err := s.sr.Find(ctx, s.db, &m); err != nil {
+	if err := s.sr.Find(ctx, s.db, &m, q); err != nil {
 		return nil, err
 	}
 

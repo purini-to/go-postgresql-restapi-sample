@@ -4,27 +4,21 @@ import (
 	"context"
 
 	"github.com/jinzhu/gorm"
-	"github.com/purini-to/go-postgresql-restapi-sample/domain/repository"
 
 	"github.com/purini-to/go-postgresql-restapi-sample/domain/model"
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/db"
 )
 
-func with(o *repository.Option, d *db.DB) *gorm.DB {
-	return d.Where(o.System).Limit(o.Limit).Offset(o.Offset)
+func with(o *model.Query, d *db.DB) *gorm.DB {
+	return d.Limit(o.Limit).Offset(o.Offset).Order(o.Sort)
 }
 
 // System is system datastore.
 type System struct{}
 
-func (s *System) Find(ctx context.Context, db *db.DB, m *[]model.System, o ...repository.O) error {
-	op := repository.DefaultOption()
-
-	for _, o := range o {
-		o(op)
-	}
-
-	d := with(op, db)
+// Find find system.
+func (s *System) Find(ctx context.Context, db *db.DB, m *[]model.System, q *model.Query) error {
+	d := with(q, db)
 
 	return d.Find(m).Error
 }
