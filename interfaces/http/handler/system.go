@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/imdario/mergo"
+
 	"github.com/asaskevich/govalidator"
 
 	"github.com/purini-to/go-postgresql-restapi-sample/domain/model"
@@ -83,8 +85,7 @@ func (s *System) Get(w http.ResponseWriter, r *http.Request) {
 func (s *System) Create(w http.ResponseWriter, r *http.Request) {
 	var sys model.System
 	if err := api.BindBody(r, &sys); err != nil {
-		api.InternalServerError(w)
-		s.l.Error(err.Error())
+		api.BadRequest(w, api.WithError(err)...)
 		return
 	}
 	if _, err := govalidator.ValidateStruct(&sys); err != nil {
@@ -94,11 +95,64 @@ func (s *System) Create(w http.ResponseWriter, r *http.Request) {
 
 	if err := s.su.Create(r.Context(), &sys); err != nil {
 		api.InternalServerError(w)
-		s.l.Error(err.Error())
+		s.l.Error(err.Error(), zap.Any("system", &sys))
 		return
 	}
 
-	api.JSON(w, &sys, 200)
+	api.JSON(w, &sys, http.StatusOK)
+}
+
+// Put update system.
+func (s *System) Put(w http.ResponseWriter, r *http.Request) {
+	var sys model.System
+	if err := api.BindBody(r, &sys); err != nil {
+		api.BadRequest(w, api.WithError(err)...)
+		return
+	}
+	if _, err := govalidator.ValidateStruct(&sys); err != nil {
+		api.BadRequest(w, api.WithError(err)...)
+		return
+	}
+	v := r.Context().Value(systemKey)
+	sysDB, ok := v.(*model.System)
+	if !ok {
+		api.InternalServerError(w)
+		s.l.Error("context value can't cast type", zap.Any("src", v), zap.String("type", "model.System"))
+		return
+	}
+	if err := mergo.MergeWithOverwrite(sysDB, sys); err != nil {
+		api.InternalServerError(w)
+		s.l.Error("db system can't merge request system",
+			zap.Any("db system", &sysDB), zap.Any("request system", &sys))
+		return
+	}
+
+	if err := s.su.Update(r.Context(), sysDB); err != nil {
+		api.InternalServerError(w)
+		s.l.Error(err.Error(), zap.Any("system", &sys))
+		return
+	}
+
+	api.JSON(w, sysDB, http.StatusOK)
+}
+
+// Delete delete system.
+func (s *System) Delete(w http.ResponseWriter, r *http.Request) {
+	v := r.Context().Value(systemKey)
+	sys, ok := v.(*model.System)
+	if !ok {
+		api.InternalServerError(w)
+		s.l.Error("context value can't cast type", zap.Any("src", v), zap.String("type", "model.System"))
+		return
+	}
+
+	if err := s.su.Delete(r.Context(), sys); err != nil {
+		api.InternalServerError(w)
+		s.l.Error(err.Error(), zap.Any("system", &sys))
+		return
+	}
+
+	api.JSON(w, "", http.StatusNoContent)
 }
 
 // NewSystem create system handler.

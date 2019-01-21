@@ -41,11 +41,13 @@ func (r *Router) Mapping(engine *chi.Mux) {
 
 	engine.Route("/systems", func(rt chi.Router) {
 		rt.Get("/", r.systemH.List)
-		rt.Post("/", r.systemH.Create)
+		rt.Post("/", api.WrapAllowContentType(r.systemH.Create, api.ContentTypeJSON))
 
 		rt.Route("/{id}", func(rt chi.Router) {
 			rt.Use(r.systemH.Ctx)
 			rt.Get("/", r.systemH.Get)
+			rt.Put("/", api.WrapAllowContentType(r.systemH.Put, api.ContentTypeJSON))
+			rt.Delete("/", api.WrapAllowContentType(r.systemH.Delete, api.ContentTypeJSON))
 		})
 	})
 }

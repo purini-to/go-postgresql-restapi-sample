@@ -9,8 +9,8 @@ import (
 // Model is common table model.
 type Model struct {
 	ID        string     `json:"id" gorm:"primary_key;size:20"`
-	CreatedAt time.Time  `json:"createdAt,omitempty" gorm:"not null"`
-	UpdatedAt time.Time  `json:"updatedAt,omitempty" gorm:"not null"`
+	CreatedAt *time.Time `json:"createdAt,omitempty" gorm:"not null"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty" gorm:"not null"`
 	DeletedAt *time.Time `json:"-" sql:"index"`
 }
 

@@ -74,7 +74,17 @@ func InternalServerError(w http.ResponseWriter) {
 	JSON(w, &H{"message": http.StatusText(http.StatusInternalServerError)}, http.StatusInternalServerError)
 }
 
-// BadRequest write bad request json body.
+// UnsupportedMediaType write unsupported media type body.
+func UnsupportedMediaType(w http.ResponseWriter, opts ...WithFunc) {
+	m := H{"message": http.StatusText(http.StatusUnsupportedMediaType)}
+	for _, opt := range opts {
+		opt(m)
+	}
+
+	JSON(w, &m, http.StatusUnsupportedMediaType)
+}
+
+// BadRequest write bad request body.
 func BadRequest(w http.ResponseWriter, opts ...WithFunc) {
 	m := H{"message": http.StatusText(http.StatusBadRequest)}
 	for _, opt := range opts {

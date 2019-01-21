@@ -44,7 +44,12 @@ func (s *System) Save(ctx context.Context, db *db.DB, m *model.System) error {
 		return db.Create(m).Error
 	}
 
-	return db.Update(m).Error
+	return db.Model(m).Update(m).Error
+}
+
+// Delete delete system.
+func (s *System) Delete(ctx context.Context, db *db.DB, id string) error {
+	return db.Where("id = ?", id).Delete(&model.System{}).Error
 }
 
 // NewSystem create system datastore.

@@ -42,6 +42,16 @@ func (s *System) Create(ctx context.Context, sys *model.System) error {
 	return s.sr.Save(ctx, s.db, sys)
 }
 
+// Update update system.
+func (s *System) Update(ctx context.Context, sys *model.System) error {
+	return s.sr.Save(ctx, s.db, sys)
+}
+
+// Delete delete system.
+func (s *System) Delete(ctx context.Context, sys *model.System) error {
+	return s.sr.Delete(ctx, s.db, sys.ID)
+}
+
 // NewSystem create system usecase.
 func NewSystem(
 	l *logger.Logger,
