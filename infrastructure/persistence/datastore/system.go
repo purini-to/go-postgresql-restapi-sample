@@ -10,7 +10,17 @@ import (
 )
 
 func with(o *model.Query, d *db.DB) *gorm.DB {
-	return d.Limit(o.Limit).Offset(o.Offset).Order(o.Sort)
+	if o == nil {
+		return d.DB
+	}
+
+	db := d.Limit(o.Limit).Offset(o.Offset)
+	if len(o.Sort) > 0 {
+		db = db.Order(o.Sort)
+	} else {
+		db = db.Order(model.DefaultSort)
+	}
+	return db
 }
 
 // System is system datastore.

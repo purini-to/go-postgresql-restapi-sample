@@ -8,6 +8,5 @@ import (
 
 // HandlerSet is handler initialize group sets.
 var HandlerSet = wire.NewSet(
-	NewPing,
 	NewSystem,
 )

@@ -1,23 +1,17 @@
 package model
 
 var (
-	defaultLimit  = uint32(1000)
-	defaultOffset = uint32(0)
-	defaultSort   = "updated_at desc, created_at desc, id"
+	// DefaultLimit is default limit.
+	DefaultLimit = uint32(1000)
+	// DefaultOffset is default offset.
+	DefaultOffset = uint32(0)
+	// DefaultSort is default sort.
+	DefaultSort = "updated_at desc, created_at desc, id"
 )
 
 // Query is query parameters.
 type Query struct {
-	Limit  *uint32 `json:"limit"`
-	Offset *uint32 `json:"offset"`
-	Sort   *string `json:"sort"`
-}
-
-// DefaultQuery create default query.
-func DefaultQuery() *Query {
-	return &Query{
-		Limit:  &defaultLimit,
-		Offset: &defaultOffset,
-		Sort:   &defaultSort,
-	}
+	Limit  string `json:"limit" valid:"int,range(1|1000)"`
+	Offset string `json:"offset" valid:"int,range(0|1000000000)"`
+	Sort   string `json:"-"`
 }

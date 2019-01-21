@@ -21,7 +21,6 @@ type Router struct {
 	logger  *logger.Logger
 	logMid  middleware.Logger
 	recMid  middleware.Recoverer
-	pingH   *handler.Ping
 	systemH *handler.System
 }
 
@@ -40,8 +39,6 @@ func (r *Router) Mapping(engine *chi.Mux) {
 		api.Notfound(w)
 	})
 
-	engine.Get("/ping", r.pingH.Ping)
-
 	engine.Route("/systems", func(rt chi.Router) {
 		rt.Get("/", r.systemH.List)
 		rt.Post("/", r.systemH.Create)
@@ -58,14 +55,12 @@ func NewRouter(
 	lg *logger.Logger,
 	lm middleware.Logger,
 	rm middleware.Recoverer,
-	ph *handler.Ping,
 	sh *handler.System,
 ) *Router {
 	return &Router{
 		logger:  lg,
 		logMid:  lm,
 		recMid:  rm,
-		pingH:   ph,
 		systemH: sh,
 	}
 }

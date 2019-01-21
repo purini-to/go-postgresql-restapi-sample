@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/asaskevich/govalidator"
+
 	"github.com/purini-to/go-postgresql-restapi-sample/domain/model"
 
 	"github.com/jinzhu/gorm"
@@ -56,6 +58,11 @@ func (s *System) Ctx(next http.Handler) http.Handler {
 func (s *System) List(w http.ResponseWriter, r *http.Request) {
 	var q model.Query
 	api.BindQuery(r, &q)
+	_, err := govalidator.ValidateStruct(&q)
+	if err != nil {
+		api.BadRequest(w, api.WithError(err)...)
+		return
+	}
 
 	systems, err := s.su.Find(r.Context(), &q)
 	if err != nil {
@@ -78,6 +85,10 @@ func (s *System) Create(w http.ResponseWriter, r *http.Request) {
 	if err := api.BindBody(r, &sys); err != nil {
 		api.InternalServerError(w)
 		s.l.Error(err.Error())
+		return
+	}
+	if _, err := govalidator.ValidateStruct(&sys); err != nil {
+		api.BadRequest(w, api.WithError(err)...)
 		return
 	}
 

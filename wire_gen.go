@@ -31,7 +31,6 @@ func InitializeServer() (*http.Server, func(), error) {
 	}
 	middlewareLogger := middleware.NewLogger(loggerLogger)
 	recoverer := middleware.NewRecoverer(loggerLogger)
-	ping := handler.NewPing(loggerLogger)
 	dbDB, cleanup, err := db.NewDB(configConfig)
 	if err != nil {
 		return nil, nil, err
@@ -39,7 +38,7 @@ func InitializeServer() (*http.Server, func(), error) {
 	system := datastore.NewSystem()
 	usecaseSystem := usecase.NewSystem(loggerLogger, dbDB, system)
 	handlerSystem := handler.NewSystem(loggerLogger, usecaseSystem)
-	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer, ping, handlerSystem)
+	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer, handlerSystem)
 	server := http.NewServer(mux, routerRouter, configConfig)
 	return server, func() {
 		cleanup()

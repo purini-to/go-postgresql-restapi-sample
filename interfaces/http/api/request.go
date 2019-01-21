@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/go-chi/chi"
 )
 
 // BindBody bind struct of request body.
@@ -23,25 +21,25 @@ func BindBody(r *http.Request, b interface{}) error {
 	return nil
 }
 
-// BindQuery bind struct of request query.
+// BindQuery bind struct of query strings.
 func BindQuery(r *http.Request, b interface{}) error {
 	m := make(map[string]interface{})
-	rctx := chi.RouteContext(r.Context())
-	for k := len(rctx.URLParams.Keys) - 1; k >= 0; k-- {
-		m[rctx.URLParams.Keys[k]] = rctx.URLParams.Values[k]
-	}
-
-	if len(m) == 0 {
+	v := r.URL.Query()
+	if v == nil {
 		return nil
 	}
+	for key, vs := range v {
+		m[key] = vs[0]
+	}
 
-	tmp, err := json.Marshal(m)
+	j, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(tmp, b)
-	if err != nil {
+
+	if err := json.Unmarshal(j, b); err != nil {
 		return err
 	}
+
 	return nil
 }
