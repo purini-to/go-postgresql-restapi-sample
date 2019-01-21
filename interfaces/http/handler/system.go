@@ -30,7 +30,7 @@ const (
 
 // System is system handler.
 type System struct {
-	l  *logger.Logger
+	l  logger.Logger
 	su *usecase.System
 }
 
@@ -157,7 +157,7 @@ func (s *System) Delete(w http.ResponseWriter, r *http.Request) {
 
 // NewSystem create system handler.
 func NewSystem(
-	l *logger.Logger,
+	l logger.Logger,
 	su *usecase.System,
 ) *System {
 	return &System{

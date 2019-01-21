@@ -12,7 +12,7 @@ import (
 
 // System is usecase system.
 type System struct {
-	l  *logger.Logger
+	l  logger.Logger
 	db *db.DB
 	sr repository.System
 }
@@ -54,7 +54,7 @@ func (s *System) Delete(ctx context.Context, sys *model.System) error {
 
 // NewSystem create system usecase.
 func NewSystem(
-	l *logger.Logger,
+	l logger.Logger,
 	db *db.DB,
 	sr repository.System,
 ) *System {

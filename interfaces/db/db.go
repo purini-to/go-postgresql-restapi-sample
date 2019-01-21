@@ -6,6 +6,7 @@ import (
 	"github.com/purini-to/go-postgresql-restapi-sample/domain/model"
 
 	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
+	"github.com/purini-to/go-postgresql-restapi-sample/core/env"
 
 	"github.com/jinzhu/gorm"
 	// PostgreSQL driver
@@ -18,7 +19,7 @@ type DB struct {
 }
 
 // NewDB create db connection.
-func NewDB(cf *config.Config) (*DB, func(), error) {
+func NewDB(cf config.Config) (*DB, func(), error) {
 	connection := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s %s",
 		cf.GetString(`db.host`),
 		cf.GetString(`db.port`),
@@ -32,7 +33,7 @@ func NewDB(cf *config.Config) (*DB, func(), error) {
 		return nil, nil, err
 	}
 
-	if !cf.IsProduction() {
+	if !env.IsProduction() {
 		db.LogMode(true)
 	}
 

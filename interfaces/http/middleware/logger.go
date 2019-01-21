@@ -15,7 +15,7 @@ import (
 type Logger func(next http.Handler) http.Handler
 
 // NewLogger prodive request log middleware.
-func NewLogger(l *logger.Logger) Logger {
+func NewLogger(l logger.Logger) Logger {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			ww := cw.NewWrapResponseWriter(w, r.ProtoMajor)

@@ -14,7 +14,7 @@ import (
 type Server struct {
 	router *router.Router
 	engine *chi.Mux
-	config *config.Config
+	config config.Config
 }
 
 // Start start application
@@ -24,7 +24,7 @@ func (a *Server) Start() error {
 }
 
 // NewServer create Server instance
-func NewServer(en *chi.Mux, r *router.Router, c *config.Config) *Server {
+func NewServer(en *chi.Mux, r *router.Router, c config.Config) *Server {
 	return &Server{
 		router: r,
 		engine: en,

@@ -11,7 +11,7 @@ import (
 type Recoverer func(next http.Handler) http.Handler
 
 // NewRecoverer prodive request log middleware.
-func NewRecoverer(l *logger.Logger) Recoverer {
+func NewRecoverer(l logger.Logger) Recoverer {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			defer func() {

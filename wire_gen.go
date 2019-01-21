@@ -6,8 +6,8 @@
 package main
 
 import (
-	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
-	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
+	"github.com/purini-to/go-postgresql-restapi-sample/infrastructure/config"
+	"github.com/purini-to/go-postgresql-restapi-sample/infrastructure/logger"
 	"github.com/purini-to/go-postgresql-restapi-sample/infrastructure/persistence/datastore"
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/db"
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http"
@@ -21,25 +21,22 @@ import (
 
 func InitializeServer() (*http.Server, func(), error) {
 	mux := http.NewEngine()
-	configConfig, err := config.NewConfig()
+	zapLogger, err := logger.NewLogger()
 	if err != nil {
 		return nil, nil, err
 	}
-	loggerLogger, err := logger.NewLogger(configConfig)
-	if err != nil {
-		return nil, nil, err
-	}
-	middlewareLogger := middleware.NewLogger(loggerLogger)
-	recoverer := middleware.NewRecoverer(loggerLogger)
-	dbDB, cleanup, err := db.NewDB(configConfig)
+	middlewareLogger := middleware.NewLogger(zapLogger)
+	recoverer := middleware.NewRecoverer(zapLogger)
+	viper := config.NewConfig(zapLogger)
+	dbDB, cleanup, err := db.NewDB(viper)
 	if err != nil {
 		return nil, nil, err
 	}
 	system := datastore.NewSystem()
-	usecaseSystem := usecase.NewSystem(loggerLogger, dbDB, system)
-	handlerSystem := handler.NewSystem(loggerLogger, usecaseSystem)
-	routerRouter := router.NewRouter(loggerLogger, middlewareLogger, recoverer, handlerSystem)
-	server := http.NewServer(mux, routerRouter, configConfig)
+	usecaseSystem := usecase.NewSystem(zapLogger, dbDB, system)
+	handlerSystem := handler.NewSystem(zapLogger, usecaseSystem)
+	routerRouter := router.NewRouter(zapLogger, middlewareLogger, recoverer, handlerSystem)
+	server := http.NewServer(mux, routerRouter, viper)
 	return server, func() {
 		cleanup()
 	}, nil

@@ -4,8 +4,8 @@ package main
 
 import (
 	"github.com/google/wire"
-	"github.com/purini-to/go-postgresql-restapi-sample/core/config"
-	"github.com/purini-to/go-postgresql-restapi-sample/core/logger"
+	"github.com/purini-to/go-postgresql-restapi-sample/infrastructure/config"
+	"github.com/purini-to/go-postgresql-restapi-sample/infrastructure/logger"
 	"github.com/purini-to/go-postgresql-restapi-sample/infrastructure/persistence/datastore"
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/db"
 	"github.com/purini-to/go-postgresql-restapi-sample/interfaces/http"

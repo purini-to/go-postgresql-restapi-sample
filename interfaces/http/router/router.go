@@ -18,7 +18,7 @@ import (
 
 // Router is routeing application.
 type Router struct {
-	logger  *logger.Logger
+	logger  logger.Logger
 	logMid  middleware.Logger
 	recMid  middleware.Recoverer
 	systemH *handler.System
@@ -47,14 +47,14 @@ func (r *Router) Mapping(engine *chi.Mux) {
 			rt.Use(r.systemH.Ctx)
 			rt.Get("/", r.systemH.Get)
 			rt.Put("/", api.WrapAllowContentType(r.systemH.Put, api.ContentTypeJSON))
-			rt.Delete("/", api.WrapAllowContentType(r.systemH.Delete, api.ContentTypeJSON))
+			rt.Delete("/", r.systemH.Delete)
 		})
 	})
 }
 
 // NewRouter create application route.
 func NewRouter(
-	lg *logger.Logger,
+	lg logger.Logger,
 	lm middleware.Logger,
 	rm middleware.Recoverer,
 	sh *handler.System,
